@@ -1,0 +1,9 @@
+minimize:
+  module: conserver-link-minimize
+  options:
+    minimization_model: "gpt-4o-mini"
+    minimization_config:
+      dialog:
+        - fields_to_minimize: ["body"]
+      analysis:
+        - fields_to_minimize: ["body"]

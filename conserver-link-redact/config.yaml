@@ -1,10 +1,3 @@
-# Conserver Link Redact
-
-A vCon link for processing and redacting Conserver conversation metadata using OpenAI's GPT models.
-
-
-## Example Config
-```yaml
 redact:
   module: conserver-link-redact
   options:
@@ -14,4 +7,3 @@ redact:
         - fields_to_redact: ["body"]
       analysis:
         - fields_to_redact: ["body"]
-```
