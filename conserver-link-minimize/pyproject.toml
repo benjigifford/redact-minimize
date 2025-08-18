@@ -7,8 +7,12 @@ packages = [{ include = "conserver_link_minimize" }]
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.13"
+pydash = "^7.0.0"
 openai = "*"
 tenacity = "*"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
 
 [build-system]
 requires = ["poetry-core"]

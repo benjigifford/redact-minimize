@@ -9,6 +9,8 @@ import time
 import logging
 from tenacity import retry, stop_after_attempt, wait_exponential
 import openai
+from typing import Any, Dict, List
+import pydash
 
 logger = logging.getLogger(__name__)
 
@@ -63,3 +65,88 @@ def run_minimization(vcon, options):
     logger.info(f"conserver.link.minimize.failures: {failures}")
 
     return vcon
+
+
+def minimize_document(document: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Minimize document based on configuration with keep/drop actions.
+    """
+    if not config or 'analysis' not in config:
+        return document
+        
+    for rule in config['analysis']:
+        fields = rule.get('fields', [])
+        action = rule.get('action')
+        
+        if action == 'keep':
+            # Keep only specified fields
+            result = {}
+            for field in fields:
+                value = get_nested_value(document, field)
+                if value is not None:
+                    set_nested_value(result, field, value)
+            return result
+            
+        elif action == 'drop':
+            # Drop specified fields
+            result = document.copy()
+            for field in fields:
+                remove_field(result, field)
+            return result
+    
+    return document
+
+def get_nested_value(obj: Dict[str, Any], field: str) -> Any:
+    """Get value from object using field expression."""
+    if "[]" not in field:
+        return pydash.get(obj, field)
+    
+    parts = field.split("[]")
+    array_path = parts[0]
+    array = pydash.get(obj, array_path, [])
+    
+    if not isinstance(array, list):
+        return None
+        
+    if len(parts) == 1:
+        return array
+        
+    # Handle nested array fields
+    remainder = parts[1].lstrip('.')
+    result = []
+    for item in array:
+        if isinstance(item, dict):
+            value = get_nested_value(item, remainder)
+            if value is not None:
+                result.append({remainder: value})
+    return result
+
+def set_nested_value(obj: Dict[str, Any], field: str, value: Any) -> None:
+    """Set value in object using field expression."""
+    if "[]" not in field:
+        pydash.set_(obj, field, value)
+        return
+        
+    parts = field.split("[]")
+    array_path = parts[0]
+    
+    if len(parts) == 1:
+        pydash.set_(obj, array_path, value)
+        return
+        
+    # For nested array fields, preserve the structure
+    if isinstance(value, list):
+        pydash.set_(obj, array_path, value)
+
+def remove_field(obj: Dict[str, Any], field: str) -> None:
+    """Remove field from object."""
+    parts = field.split('.')
+    current = obj
+    
+    for part in parts[:-1]:
+        if part not in current:
+            return
+        current = current[part]
+        
+    if parts[-1] in current:
+        del current[parts[-1]]
