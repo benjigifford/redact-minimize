@@ -1,17 +1,19 @@
 [tool.poetry]
 name = "conserver-link-redact"
 version = "0.1.0"
-description = "A vCon link for processing and redacting Conserver conversation metadata"
+description = "Redaction logic for conserver-link"
+authors = ["Benjamin Gifford <benjamingifford8@gmail.com>"]
 readme = "README.md"
-packages = [{ include = "conserver_link_redact" }]
+packages = [{include = "conserver_link_redact"}]
 
 [tool.poetry.dependencies]
-python = ">=3.12,<3.13"
-openai = "*"
-tenacity = "*"
+python = "^3.12"
+pyyaml = "^6.0.1"
+tenacity = "^8.2.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core"]

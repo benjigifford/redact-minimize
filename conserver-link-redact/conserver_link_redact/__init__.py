@@ -1,4 +1,5 @@
-from .redaction_logic import run_redaction
+from .redaction_logic import RedactionEngine
 
-__version__ = "0.1.0"
-__all__ = ["run_redaction"]
+def run_redaction(vcon_data, config_path="config.yaml"):
+    engine = RedactionEngine(config_path)
+    return engine.run(vcon_data)

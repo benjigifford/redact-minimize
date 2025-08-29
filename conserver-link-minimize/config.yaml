@@ -7,3 +7,12 @@ minimize:
         - fields_to_minimize: ["body"]
       analysis:
         - fields_to_minimize: ["body"]
+minimize_fields:
+  - "SSN:"
+  - "Social Security Number:"
+  - "Credit Card:"
+  - "Account Number:"
+  - "Routing Number:"
+  - "Password:"
+  - "PIN:"
+  - "Date of Birth:"

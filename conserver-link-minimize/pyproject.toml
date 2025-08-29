@@ -1,18 +1,20 @@
 [tool.poetry]
 name = "conserver-link-minimize"
 version = "0.1.0"
-description = "A vCon link for minimizing Conserver conversation metadata"
+description = "Minimization logic for conserver-link"
+authors = ["Benjamin Gifford <benjamingifford8@gmail.com>"]
 readme = "README.md"
-packages = [{ include = "conserver_link_minimize" }]
+packages = [{include = "conserver_link_minimize"}]
 
 [tool.poetry.dependencies]
-python = ">=3.12,<3.13"
-pydash = "^7.0.0"
-openai = "*"
-tenacity = "*"
+python = "^3.12"
+pyyaml = "^6.0.1"
+tenacity = "^8.2.3"
+pydash = "^7.0.7"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core"]

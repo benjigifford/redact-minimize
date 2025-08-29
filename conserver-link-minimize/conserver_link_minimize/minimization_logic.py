@@ -7,10 +7,13 @@ using OpenAI's GPT models with retry logic and fallback mechanisms.
 
 import time
 import logging
-from tenacity import retry, stop_after_attempt, wait_exponential
 import openai
 from typing import Any, Dict, List
 import pydash
+from pathlib import Path
+from typing import Dict, Any
+import yaml
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
 
@@ -150,3 +153,48 @@ def remove_field(obj: Dict[str, Any], field: str) -> None:
         
     if parts[-1] in current:
         del current[parts[-1]]
+
+class MinimizationEngine:
+    def __init__(self, config_path: str = "config.yaml"):
+        self.config = self._load_config(config_path)
+        self.minimize_fields = self.config.get('minimize_fields', [])
+
+    def _load_config(self, config_path: str) -> Dict[str, Any]:
+        with open(config_path, 'r') as f:
+            return yaml.safe_load(f)
+
+    def minimize_content(self, content: str) -> str:
+        """Minimize content based on configured fields."""
+        if not content:
+            return ""
+        
+        minimized = content
+        for field in self.minimize_fields:
+            if field.lower() in minimized.lower():
+                start_idx = minimized.lower().find(field.lower())
+                end_idx = minimized.find('\n', start_idx)
+                if end_idx == -1:
+                    end_idx = len(minimized)
+                
+                minimized = (
+                    minimized[:start_idx] + 
+                    field + " [MINIMIZED]" +
+                    minimized[end_idx:]
+                )
+        
+        return minimized
+
+    def run(self, vcon_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process a vCon document."""
+        if not vcon_data:
+            return {}
+
+        minimized_vcon = vcon_data.copy()
+        if 'dialog' in minimized_vcon:
+            for entry in minimized_vcon['dialog']:
+                if 'content' in entry:
+                    entry['content'] = self.minimize_content(entry['content'])
+                if 'transcript' in entry:
+                    entry['transcript'] = self.minimize_content(entry['transcript'])
+
+        return minimized_vcon

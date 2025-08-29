@@ -7,3 +7,12 @@ redact:
         - fields_to_redact: ["body"]
       analysis:
         - fields_to_redact: ["body"]
+redact_patterns:
+  - "SSN:"
+  - "Social Security Number:"
+  - "Credit Card:"
+  - "Account Number:"
+  - "Routing Number:"
+  - "Password:"
+  - "PIN:"
+  - "Date of Birth:"
